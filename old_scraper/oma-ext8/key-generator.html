@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OMA Lead Engine — License Key Generator</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0d12;color:#e8edf5;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{background:#111620;border:1px solid #1e2738;border-radius:16px;padding:32px;width:100%;max-width:500px}
+h1{font-size:20px;margin-bottom:4px;color:#3b7cff}
+.sub{font-size:12px;color:#5a6a85;margin-bottom:28px;font-family:monospace}
+.field{margin-bottom:16px}
+label{display:block;font-size:11px;color:#5a6a85;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-family:monospace}
+input{width:100%;background:#181e2a;border:1px solid #1e2738;border-radius:8px;padding:10px 14px;color:#e8edf5;font-size:14px;outline:none;font-family:monospace}
+input:focus{border-color:#3b7cff}
+input::placeholder{color:#5a6a85}
+.gen-btn{width:100%;padding:12px;background:#3b7cff;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;transition:background .15s}
+.gen-btn:hover{background:#5a92ff}
+.result{margin-top:20px;background:#181e2a;border:1px solid #1e2738;border-radius:10px;padding:16px;display:none}
+.result-label{font-size:10px;color:#5a6a85;text-transform:uppercase;letter-spacing:.07em;font-family:monospace;margin-bottom:6px}
+.key-display{font-size:22px;font-weight:700;color:#00e5a0;font-family:monospace;letter-spacing:2px;margin-bottom:12px}
+.copy-btn{padding:8px 18px;background:#00e5a0;color:#0a0d12;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer}
+.copy-btn:hover{background:#00ffb3}
+.copied{color:#00e5a0;font-size:12px;font-family:monospace;margin-left:10px;display:none}
+.info-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.info-item{background:#111620;border:1px solid #1e2738;border-radius:6px;padding:8px 12px;font-size:11px;font-family:monospace;color:#5a6a85;flex:1}
+.info-item b{color:#e8edf5;display:block;font-size:12px;margin-bottom:2px}
+.warn{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.2);border-radius:8px;padding:10px 14px;font-size:11px;color:#ff4757;margin-bottom:20px;font-family:monospace}
+.history{margin-top:24px}
+.history h3{font-size:12px;color:#5a6a85;text-transform:uppercase;letter-spacing:.07em;font-family:monospace;margin-bottom:10px}
+.hist-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e2738;font-size:12px;font-family:monospace}
+.hist-row:last-child{border-bottom:none}
+.hist-email{flex:1;color:#5a6a85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-key{color:#00e5a0;font-weight:600}
+.hist-date{color:#1e2738;font-size:10px;flex-shrink:0}
+.hist-copy{padding:3px 8px;background:transparent;color:#3b7cff;border:1px solid #1e2738;border-radius:4px;font-size:10px;cursor:pointer;font-family:monospace}
+.clear-hist{font-size:11px;color:#ff4757;cursor:pointer;font-family:monospace;background:none;border:none;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>⚡ OMA Lead Engine</h1>
+  <div class="sub">License Key Generator — Private Use Only</div>
+
+  <div class="warn">🔒 Keep this page private. Only you should have access to it.</div>
+
+  <div class="field">
+    <label>Customer Email</label>
+    <input type="email" id="email" placeholder="customer@example.com">
+  </div>
+
+  <div class="field">
+    <label>Plan</label>
+    <input type="text" id="plan" value="PRO" readonly style="color:#f59e0b;cursor:default">
+  </div>
+
+  <div class="field">
+    <label>Amount Received</label>
+    <input type="text" id="amount" placeholder="$50" value="$50">
+  </div>
+
+  <button class="gen-btn" onclick="generateKey()">⚡ Generate License Key</button>
+
+  <div class="result" id="result">
+    <div class="result-label">License Key for Customer</div>
+    <div class="key-display" id="keyDisplay">OMA-XXXX-XXXX</div>
+    <button class="copy-btn" onclick="copyKey()">📋 Copy Key</button>
+    <span class="copied" id="copiedMsg">✅ Copied!</span>
+    <div class="info-row">
+      <div class="info-item"><b id="infoEmail">—</b>Email</div>
+      <div class="info-item"><b id="infoDate">—</b>Generated</div>
+      <div class="info-item"><b>$50</b>Amount</div>
+      <div class="info-item"><b>Lifetime</b>Access</div>
+    </div>
+    <div style="margin-top:12px;background:#0a0d12;border-radius:6px;padding:10px;font-size:11px;color:#5a6a85;font-family:monospace;line-height:1.8">
+      <b style="color:#e8edf5;display:block;margin-bottom:4px">📋 Message to send customer:</b>
+      <div id="msgTemplate"></div>
+    </div>
+  </div>
+
+  <div class="history" id="historySection" style="display:none">
+    <h3>Generated Keys</h3>
+    <div id="historyList"></div>
+    <button class="clear-hist" onclick="clearHistory()">✕ Clear history</button>
+  </div>
+</div>
+
+<script>
+const SALT = "OMA-LEAD-ENGINE-2025-SECRET";
+
+function generateKeyHash(email, plan) {
+  const raw = SALT + email.toLowerCase().trim() + plan;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  const hex = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+  return 'OMA-' + hex.slice(0,4) + '-' + hex.slice(4,8);
+}
+
+function generateKey() {
+  const email = document.getElementById('email').value.trim();
+  if (!email || !email.includes('@')) {
+    alert('Please enter a valid customer email');
+    return;
+  }
+
+  const key  = generateKeyHash(email, 'PRO');
+  const date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+
+  document.getElementById('keyDisplay').textContent = key;
+  document.getElementById('infoEmail').textContent  = email;
+  document.getElementById('infoDate').textContent   = date;
+  document.getElementById('result').style.display   = 'block';
+
+  document.getElementById('msgTemplate').innerHTML =
+    'Hi,<br><br>' +
+    'Thank you for purchasing OMA Lead Engine Pro! 🎉<br><br>' +
+    'Your license key:<br>' +
+    '<b style="color:#00e5a0;font-size:14px">' + key + '</b><br><br>' +
+    'How to activate:<br>' +
+    '1. Open the OMA Lead Engine extension in Chrome<br>' +
+    '2. Click ⚙️ Setup tab<br>' +
+    '3. Click "Enter license key"<br>' +
+    '4. Enter your email: <b>' + email + '</b><br>' +
+    '5. Enter the key above → Activate<br><br>' +
+    'Enjoy unlimited leads! 🚀<br>' +
+    'Uns — Outreach Marketing Agency';
+
+  // Save to history
+  const history = JSON.parse(localStorage.getItem('keyHistory') || '[]');
+  history.unshift({ email, key, date });
+  localStorage.setItem('keyHistory', JSON.stringify(history.slice(0, 50)));
+  renderHistory();
+}
+
+function copyKey() {
+  const key = document.getElementById('keyDisplay').textContent;
+  navigator.clipboard.writeText(key).then(() => {
+    const msg = document.getElementById('copiedMsg');
+    msg.style.display = 'inline';
+    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+  });
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('keyHistory') || '[]');
+  const section = document.getElementById('historySection');
+  const list    = document.getElementById('historyList');
+
+  if (!history.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  list.innerHTML = history.map(h =>
+    '<div class="hist-row">' +
+      '<span class="hist-email">' + h.email + '</span>' +
+      '<span class="hist-key">' + h.key + '</span>' +
+      '<span class="hist-date">' + h.date + '</span>' +
+      '<button class="hist-copy" onclick="navigator.clipboard.writeText(\'' + h.key + '\')">Copy</button>' +
+    '</div>'
+  ).join('');
+}
+
+function clearHistory() {
+  if (confirm('Clear all key history?')) {
+    localStorage.removeItem('keyHistory');
+    renderHistory();
+  }
+}
+
+// Load history on page open
+renderHistory();
+</script>
+</body>
+</html>

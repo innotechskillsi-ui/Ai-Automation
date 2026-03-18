@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OMA Lead Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--s:#111620;--s2:#181e2a;--b:#1e2738;--a:#3b7cff;--a2:#00e5a0;--d:#ff4757;--w:#ffb626;--t:#e8edf5;--m:#5a6a85;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--gold:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:420px;min-height:560px;background:var(--bg);color:var(--t);font-family:var(--sans);font-size:13px}
+.hdr{background:var(--s);border-bottom:1px solid var(--b);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-ico{width:28px;height:28px;background:var(--a);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.logo-n{font-size:13px;font-weight:600}
+.logo-s{font-size:10px;color:var(--m);font-family:var(--mono)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.live{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--m);font-family:var(--mono)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--a2);box-shadow:0 0 5px var(--a2);animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.pro-badge{font-size:9px;font-family:var(--mono);padding:2px 7px;border-radius:10px;font-weight:700}
+.pro-badge.pro{background:rgba(245,158,11,.2);color:var(--gold);border:1px solid rgba(245,158,11,.3)}
+.pro-badge.free{background:rgba(90,106,133,.15);color:var(--m);border:1px solid var(--b)}
+.usage-bar{padding:5px 14px;background:var(--s2);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px}
+.usage-text{font-size:10px;font-family:var(--mono);color:var(--m);flex-shrink:0}
+.usage-track{flex:1;background:var(--b);border-radius:3px;height:4px;overflow:hidden}
+.usage-fill{height:100%;background:var(--a2);border-radius:3px;transition:width .3s}
+.usage-fill.warn{background:var(--w)}.usage-fill.danger{background:var(--d)}
+.upgrade-btn{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:4px;background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);cursor:pointer;white-space:nowrap;font-weight:600}
+.page-bar{padding:6px 14px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.page-ico{font-size:13px;flex-shrink:0}
+.page-name{font-size:11px;font-weight:500;color:var(--a2)}
+.page-url{font-size:10px;color:var(--m);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px}
+.tabs{display:flex;background:var(--s);border-bottom:1px solid var(--b)}
+.tab{flex:1;padding:7px 2px;font-size:10px;text-align:center;cursor:pointer;color:var(--m);border:none;background:none;font-family:var(--sans);border-bottom:2px solid transparent;transition:all .15s}
+.tab.on{color:var(--a);border-bottom-color:var(--a)}
+.pnl{display:none;height:calc(100vh - 128px);overflow-y:auto;padding:11px 13px}
+.pnl::-webkit-scrollbar{width:3px}
+.pnl::-webkit-scrollbar-thumb{background:var(--b)}
+.pnl.on{display:block}
+/* BUTTONS */
+.btn-primary{width:100%;padding:10px;background:var(--a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px;transition:all .15s}
+.btn-primary:hover{background:#5a92ff}
+.btn-primary:disabled{background:var(--b);color:var(--m);cursor:not-allowed}
+.btn-pro{width:100%;padding:8px;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);color:var(--gold);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-pro:hover{background:rgba(245,158,11,.15)}
+.btn-pro:disabled{opacity:.35;cursor:not-allowed}
+.pro-tag{font-size:9px;background:rgba(245,158,11,.2);color:var(--gold);padding:1px 5px;border-radius:3px}
+.btn-row{display:flex;gap:6px;margin-bottom:7px}
+.btn-half{flex:1;padding:8px;border:none;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.btn-green{background:var(--a2);color:#0a0d12}.btn-green:disabled{background:var(--b);color:var(--m);cursor:not-allowed}
+.btn-warn{background:transparent;color:var(--w);border:1px solid var(--w)}
+.btn-danger{background:transparent;color:var(--d);border:1px solid rgba(255,71,87,.3)}
+/* TIP BOX */
+.tip{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:11px;color:var(--m);line-height:1.8}
+.tip b{color:var(--t);font-weight:500}
+.tip-link{color:var(--a);cursor:pointer}
+/* PROGRESS BAR */
+.progress-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:none}
+.progress-label{font-size:11px;color:var(--m);font-family:var(--mono);margin-bottom:6px}
+.progress-track{background:var(--b);border-radius:3px;height:6px;overflow:hidden;margin-bottom:5px}
+.progress-fill{height:100%;background:var(--a);border-radius:3px;transition:width .3s}
+.progress-detail{font-size:10px;color:var(--m);font-family:var(--mono)}
+/* LEAD CARDS */
+.res-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;color:var(--m);font-family:var(--mono)}
+.res-bar span{color:var(--a2);font-weight:600}
+.lc{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:9px 11px;margin-bottom:7px;position:relative;transition:border-color .15s}
+.lc:hover{border-color:var(--a)}
+.lc.audited{border-left:3px solid var(--a2)}
+.score-wrap{position:absolute;top:9px;left:11px}
+.score-stars{font-size:10px;line-height:1}
+.lc-body{padding-left:46px;padding-right:52px}
+.lc-n{font-size:12px;font-weight:600}
+.lc-domain{font-size:10px;color:var(--a);font-family:var(--mono);cursor:pointer;text-decoration:none;display:inline-block;margin:1px 0 3px}
+.lc-domain:hover{text-decoration:underline}
+.lc-c{font-size:11px;color:var(--m);margin-bottom:4px}
+.lc-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px}
+.te{background:rgba(59,124,255,.15);color:var(--a)}
+.tp{background:rgba(255,182,38,.15);color:var(--w)}
+.ts{background:rgba(90,106,133,.15);color:var(--m)}
+.tn{background:rgba(0,229,160,.1);color:var(--a2)}
+.t-issues{background:rgba(255,71,87,.1);color:var(--d)}
+.la-wrap{position:absolute;top:8px;right:8px;display:flex;gap:3px}
+.la{width:21px;height:21px;border-radius:4px;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.la-audit{background:rgba(245,158,11,.15);color:var(--gold)}.la-audit:hover{background:var(--gold);color:#000}
+.la-x{background:rgba(255,71,87,.1);color:var(--d)}.la-x:hover{background:var(--d);color:#fff}
+/* AUDIT PANEL */
+.audit-panel{padding-top:8px;margin-top:7px;border-top:1px solid var(--b);display:none}
+.audit-panel.show{display:block}
+.health-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.health-label{font-size:10px;color:var(--m);font-family:var(--mono);flex-shrink:0}
+.health-track{flex:1;background:var(--b);border-radius:3px;height:5px;overflow:hidden}
+.health-fill{height:100%;border-radius:3px}
+.health-val{font-size:10px;font-family:var(--mono);font-weight:600;flex-shrink:0;width:30px;text-align:right}
+.opener-box{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 10px;margin-bottom:7px}
+.opener-label{font-size:9px;color:var(--gold);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.opener-edit-btn{font-size:9px;color:var(--a);cursor:pointer;font-family:var(--mono)}
+.opener-text{font-size:11px;color:var(--t);line-height:1.6;font-style:italic}
+.opener-input{width:100%;background:var(--s2);border:1px solid var(--a);border-radius:4px;padding:5px 7px;color:var(--t);font-size:11px;font-family:var(--mono);outline:none;resize:none;line-height:1.5;display:none}
+.issues-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
+.issue-chip{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.15);border-radius:5px;padding:4px 7px;font-size:10px}
+.issue-chip-icon{margin-right:3px}
+.issue-chip-prob{color:var(--d);font-weight:500}
+.issue-chip-svc{color:var(--m);font-family:var(--mono);font-size:9px;margin-top:1px}
+/* FILTERS */
+.filter-bar{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap}
+.filter-chip{padding:4px 9px;border-radius:12px;font-size:10px;font-family:var(--mono);cursor:pointer;border:1px solid var(--b);background:transparent;color:var(--m);transition:all .15s}
+.filter-chip.on{background:var(--a);color:#fff;border-color:var(--a)}
+.srch{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:11px;font-family:var(--mono);outline:none;margin-bottom:6px}
+.srch:focus{border-color:var(--a)}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:9px}
+.stat{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:7px 5px;text-align:center}
+.stat-n{font-size:15px;font-weight:600;font-family:var(--mono)}
+.bl{color:var(--a)}.gr{color:var(--a2)}.yw{color:var(--w)}.gd{color:var(--gold)}
+.stat-l{font-size:8px;color:var(--m);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+/* MINI LEADS */
+.ml{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--b)}
+.ml:last-child{border-bottom:none}
+.ml-chk{width:13px;height:13px;accent-color:var(--a);flex-shrink:0}
+.ml-score{font-size:10px;flex-shrink:0;width:24px}
+.ml-i{flex:1;min-width:0}
+.ml-n{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-s{font-size:10px;color:var(--m);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-b{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px;flex-shrink:0}
+.mb-new{background:rgba(59,124,255,.15);color:var(--a)}
+.mb-approved{background:rgba(0,229,160,.15);color:var(--a2)}
+.mb-pushed{background:rgba(255,182,38,.15);color:var(--w)}
+.mb-replied{background:rgba(0,229,160,.3);color:#fff}
+.ml-del{width:16px;height:16px;border-radius:3px;border:none;background:rgba(255,71,87,.1);color:var(--d);cursor:pointer;font-size:9px;flex-shrink:0}
+/* COMPETITOR BOX */
+.comp-box{background:var(--s);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px;margin-bottom:10px}
+.comp-title{font-size:12px;font-weight:600;color:var(--gold);margin-bottom:4px}
+.comp-sub{font-size:10px;color:var(--m);margin-bottom:10px;line-height:1.6}
+.comp-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:8px 10px;color:var(--t);font-size:11px;font-family:var(--mono);outline:none;margin-bottom:7px}
+.comp-input:focus{border-color:var(--gold)}
+.comp-input::placeholder{color:var(--m)}
+/* BULK SCRAPE */
+.bulk-box{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:12px;margin-bottom:10px}
+.bulk-title{font-size:12px;font-weight:600;color:var(--a2);margin-bottom:4px}
+.bulk-sub{font-size:10px;color:var(--m);margin-bottom:10px;line-height:1.6}
+/* SETTINGS */
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10px;color:var(--m);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.field input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 11px;color:var(--t);font-family:var(--mono);font-size:11px;outline:none}
+.field input:focus{border-color:var(--a)}
+.field input::placeholder{color:var(--m)}
+.save-btn{width:100%;padding:10px;background:var(--a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px}
+.cb{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:4px;margin-bottom:9px}
+.cy{background:rgba(0,229,160,.15);color:var(--a2)}.cn{background:rgba(255,71,87,.15);color:var(--d)}
+.saved{text-align:center;font-size:10px;font-family:var(--mono);color:var(--a2);margin-top:6px;display:none}
+.lic-box{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:12px;margin-bottom:12px}
+.lic-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.lic-status{font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:10px}
+.lic-pro{background:rgba(245,158,11,.2);color:var(--gold)}.lic-free{background:rgba(90,106,133,.15);color:var(--m)}
+.lic-feat{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 0}
+.lic-feat.has{color:var(--a2)}.lic-feat.locked{color:var(--m);opacity:.5}
+.how{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:10px;margin-top:10px}
+.how h4{font-size:10px;color:var(--a);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.how li{font-size:11px;color:var(--m);line-height:1.8;margin-left:14px}
+.code{font-family:var(--mono);font-size:9px;background:var(--bg);border:1px solid var(--b);padding:6px 8px;border-radius:4px;margin:5px 0;display:block;color:var(--a2);word-break:break-all;white-space:pre-wrap}
+/* LOG */
+.log-line{font-size:10px;font-family:var(--mono);color:var(--m);padding:1px 0;line-height:1.8}
+.log-line.ok{color:var(--a2)}.log-line.err{color:var(--d)}.log-line.inf{color:var(--a)}
+/* EMPTY */
+.empty{padding:28px 14px;text-align:center;color:var(--m)}
+.e-ico{font-size:26px;margin-bottom:6px}.e-txt{font-size:12px}
+.e-sub{font-size:10px;font-family:var(--mono);margin-top:3px;color:var(--b)}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:22px;width:370px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:3px;color:var(--gold)}
+.modal-sub{font-size:11px;color:var(--m);margin-bottom:14px}
+.modal-price{font-size:30px;font-weight:700;margin-bottom:3px}
+.modal-price span{font-size:13px;color:var(--m);font-weight:400}
+.modal-feats{margin-bottom:14px}
+.modal-feat{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--m);padding:3px 0}
+.modal-feat span{color:var(--a2)}
+.modal-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 11px;color:var(--t);font-family:var(--mono);font-size:11px;outline:none;margin-bottom:7px}
+.modal-input:focus{border-color:var(--a)}
+.modal-input::placeholder{color:var(--m)}
+.modal-activate{width:100%;padding:10px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);margin-bottom:7px}
+.modal-close{width:100%;padding:7px;background:transparent;color:var(--m);border:1px solid var(--b);border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--sans)}
+.modal-msg{text-align:center;font-size:11px;font-family:var(--mono);margin-top:5px;min-height:15px}
+.modal-msg.ok{color:var(--a2)}.modal-msg.err{color:var(--d)}
+</style>
+</head>
+<body>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal">
+    <div class="modal-title">⚡ Upgrade to Pro</div>
+    <div class="modal-sub">One-time payment. Lifetime access. No subscriptions.</div>
+    <div class="modal-price">$50 <span>one-time</span></div>
+    <div class="modal-feats">
+      <div class="modal-feat"><span>✓</span> Unlimited leads (no monthly cap)</div>
+      <div class="modal-feat"><span>✓</span> Website Pain Point Detector (silent)</div>
+      <div class="modal-feat"><span>✓</span> Personalized email opener per lead</div>
+      <div class="modal-feat"><span>✓</span> Competitor Client Stealer</div>
+      <div class="modal-feat"><span>✓</span> Bulk scrape — auto-paginate</div>
+      <div class="modal-feat"><span>✓</span> Score & audit filters</div>
+      <div class="modal-feat"><span>✓</span> Reply detection</div>
+    </div>
+    <div style="font-size:11px;color:var(--m);margin-bottom:10px">Already purchased? Enter your license key:</div>
+    <input type="email" class="modal-input" id="licEmail" placeholder="Your email address">
+    <input type="text" class="modal-input" id="licKey" placeholder="License key — OMA-XXXX-XXXX">
+    <button class="modal-activate" id="activateBtn">Activate License</button>
+    <button class="modal-close" id="closeModalBtn">Maybe later</button>
+    <div class="modal-msg" id="modalMsg"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-ico">⚡</div>
+    <div><div class="logo-n">OMA Lead Engine</div><div class="logo-s">v7 · scrape · audit · personalize</div></div>
+  </div>
+  <div class="hdr-right">
+    <span class="pro-badge free" id="planBadge">FREE</span>
+    <div class="live"><div class="dot"></div><span id="liveStatus">Ready</span></div>
+  </div>
+</div>
+
+<!-- USAGE BAR -->
+<div class="usage-bar" id="usageBar">
+  <span class="usage-text" id="usageText">0 / 50 leads</span>
+  <div class="usage-track"><div class="usage-fill" id="usageFill" style="width:0%"></div></div>
+  <button class="upgrade-btn" id="upgradeBarBtn">Upgrade $50</button>
+</div>
+
+<!-- PAGE BAR -->
+<div class="page-bar">
+  <div class="page-ico" id="pageIco">🌐</div>
+  <div style="min-width:0;flex:1">
+    <div class="page-name" id="pageName">Open a page to scrape</div>
+    <div class="page-url" id="pageUrl"></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" id="tab-scrape-btn">🔍 Scrape</button>
+  <button class="tab" id="tab-bulk-btn">⚡ Bulk</button>
+  <button class="tab" id="tab-comp-btn">🕵️ Steal</button>
+  <button class="tab" id="tab-leads-btn">📋 Leads</button>
+  <button class="tab" id="tab-log-btn">📊 Log</button>
+  <button class="tab" id="tab-settings-btn">⚙️</button>
+</div>
+
+<!-- SCRAPE TAB -->
+<div class="pnl on" id="pnl-scrape">
+  <div class="tip">
+    <b>Go to one of these, then Scrape:</b><br>
+    <a class="tip-link" id="link-maps">→ Google Maps</a> · <a class="tip-link" id="link-linkedin">→ LinkedIn</a> · <a class="tip-link" id="link-yp">→ Yellow Pages</a> · <a class="tip-link" id="link-realtor">→ Realtor.com</a>
+  </div>
+  <button class="btn-primary" id="scrapeBtn">⚡ Scrape This Page</button>
+  <button class="btn-pro" id="auditAllBtn">🎯 Audit All Leads (Silent) <span class="pro-tag">PRO</span></button>
+  <div class="progress-box" id="auditProgress">
+    <div class="progress-label" id="auditProgressLabel">Auditing websites...</div>
+    <div class="progress-track"><div class="progress-fill" id="auditProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="auditProgressDetail"></div>
+  </div>
+  <div class="res-bar" id="resBar" style="display:none">
+    <span>Found <span id="resNum">0</span> leads · <span id="dupeNum" style="color:var(--w)">0 dupes skipped</span></span>
+  </div>
+  <div id="scrapeResults"></div>
+</div>
+
+<!-- BULK SCRAPE TAB -->
+<div class="pnl" id="pnl-bulk">
+  <div class="bulk-box">
+    <div class="bulk-title">⚡ Bulk Scrape <span class="pro-tag">PRO</span></div>
+    <div class="bulk-sub">Enter a search URL from Google Maps, Yellow Pages, or LinkedIn. We'll automatically scrape multiple pages and collect all leads silently.</div>
+    <div class="field" style="margin-bottom:7px"><label>Search URL (first page)</label><input type="text" id="bulkUrl" placeholder="https://www.google.com/maps/search/real+estate+agent+Texas"></div>
+    <div class="field" style="margin-bottom:7px"><label>How many pages to scrape</label><input type="number" id="bulkPages" value="5" min="1" max="20"></div>
+    <button class="btn-pro" id="bulkBtn" style="width:100%">⚡ Start Bulk Scrape <span class="pro-tag">PRO</span></button>
+  </div>
+  <div class="progress-box" id="bulkProgress">
+    <div class="progress-label" id="bulkProgressLabel">Scraping pages...</div>
+    <div class="progress-track"><div class="progress-fill" id="bulkProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="bulkProgressDetail"></div>
+  </div>
+  <div id="bulkResults"></div>
+</div>
+
+<!-- COMPETITOR STEALER TAB -->
+<div class="pnl" id="pnl-comp">
+  <div class="comp-box">
+    <div class="comp-title">🕵️ Competitor Client Stealer <span class="pro-tag">PRO</span></div>
+    <div class="comp-sub">Enter a competitor agency name. We'll find all their clients, scrape contacts, audit websites, and add to your lead list — all silently.</div>
+    <input type="text" class="comp-input" id="compName" placeholder="Competitor agency name e.g. WebAgency Pro">
+    <input type="text" class="comp-input" id="compLocation" placeholder="Location (optional) — e.g. Texas, USA">
+    <button class="btn-pro" id="compBtn" style="width:100%;margin-bottom:0">🕵️ Find Their Clients <span class="pro-tag">PRO</span></button>
+  </div>
+  <div class="progress-box" id="compProgress">
+    <div class="progress-label" id="compProgressLabel">Searching...</div>
+    <div class="progress-track"><div class="progress-fill" id="compProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="compProgressDetail"></div>
+  </div>
+  <div id="compResults"></div>
+</div>
+
+<!-- LEADS TAB -->
+<div class="pnl" id="pnl-leads">
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-n bl" id="sT">0</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-n gr" id="sA">0</div><div class="stat-l">Approved</div></div>
+    <div class="stat"><div class="stat-n yw" id="sP">0</div><div class="stat-l">Pushed</div></div>
+    <div class="stat"><div class="stat-n gd" id="sR">0</div><div class="stat-l">Replied</div></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-half btn-green" id="pushBtn" disabled>📤 Push</button>
+    <button class="btn-half btn-warn" id="csvBtn">⬇ CSV</button>
+    <button class="btn-half btn-danger" id="clrBtn">✕ Clear</button>
+  </div>
+  <input type="text" class="srch" id="srchInput" placeholder="Search leads...">
+  <!-- FILTERS -->
+  <div class="filter-bar">
+    <button class="filter-chip on" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="new">New</button>
+    <button class="filter-chip" data-filter="approved">Approved</button>
+    <button class="filter-chip" data-filter="pushed">Pushed</button>
+    <button class="filter-chip" data-filter="replied">Replied</button>
+    <button class="filter-chip" data-filter="audited">Audited</button>
+    <button class="filter-chip" data-filter="hot">⭐⭐⭐</button>
+  </div>
+  <div id="leadsList"><div class="empty"><div class="e-ico">📋</div><div class="e-txt">No leads yet</div><div class="e-sub">Scrape pages to collect leads</div></div></div>
+</div>
+
+<!-- LOG TAB -->
+<div class="pnl" id="pnl-log">
+  <div id="logDiv"><div class="log-line inf">▶ OMA Lead Engine v7 ready</div></div>
+</div>
+
+<!-- SETTINGS TAB -->
+<div class="pnl" id="pnl-settings">
+  <div class="lic-box">
+    <div class="lic-title">License <span class="lic-status lic-free" id="licStatusBadge">FREE TIER</span></div>
+    <div id="licInfo" style="font-size:11px;color:var(--m);margin-bottom:8px">50 leads/month · Basic scraping only</div>
+    <div id="licFeatures">
+      <div class="lic-feat has">✓ Basic scraping · Push to Sheet · CSV</div>
+      <div class="lic-feat locked">🔒 Pain Point Detector (Pro)</div>
+      <div class="lic-feat locked">🔒 Personalized Email Opener (Pro)</div>
+      <div class="lic-feat locked">🔒 Competitor Client Stealer (Pro)</div>
+      <div class="lic-feat locked">🔒 Bulk Scrape (Pro)</div>
+      <div class="lic-feat locked">🔒 Unlimited leads (Pro)</div>
+    </div>
+    <button class="save-btn" id="upgradeSettingsBtn" style="margin-top:10px;background:var(--gold);color:#000">⚡ Upgrade to Pro — $50 one-time</button>
+    <div style="font-size:10px;color:var(--m);text-align:center;margin-top:3px">Have a key? <span id="enterKeyLink" style="color:var(--a);cursor:pointer">Enter license key</span></div>
+  </div>
+  <div id="connBadge" class="cb cn">● Not connected to Google Sheet</div>
+  <div class="field"><label>Apps Script URL</label><input type="text" id="iUrl" placeholder="https://script.google.com/macros/s/..."></div>
+  <div class="field"><label>Your Name</label><input type="text" id="iName" value="Uns"></div>
+  <div class="field"><label>Agency Name</label><input type="text" id="iAgency" value="Outreach Marketing Agency"></div>
+  <div class="field"><label>WhatsApp / Booking Link</label><input type="text" id="iWA" value="https://wa.me/923710160513"></div>
+  <button class="save-btn" id="saveBtn">💾 Save Settings</button>
+  <div class="saved" id="savedMsg">✅ Saved!</div>
+  <div class="how">
+    <h4>Connect Google Sheet — updated doPost</h4>
+    <ol>
+      <li>Open Google Sheet → Extensions → Apps Script</li>
+      <li>Replace your doPost function with this:<span class="code">function doPost(e) {
+  var d = JSON.parse(e.postData.contents);
+  var s = SpreadsheetApp.getActiveSpreadsheet()
+            .getSheetByName("Leads");
+  s.appendRow([
+    d.firstName, d.lastName, d.email, d.company,
+    d.niche||"realestate", d.website, d.painPoints||d.painPoint,
+    1, "Pending", "", "", "", "",
+    d.opener||"",       // Col N — Personalized Opener
+    d.auditScore||"",   // Col O — Website Health Score
+    d.painPoints||""    // Col P — Detected Issues
+  ]);
+  return ContentService.createTextOutput(
+    JSON.stringify({status:"ok"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</span></li>
+      <li>Deploy → New Deployment → Web App → Execute as Me → Anyone → Deploy</li>
+      <li>Copy URL → paste above → Save</li>
+    </ol>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
