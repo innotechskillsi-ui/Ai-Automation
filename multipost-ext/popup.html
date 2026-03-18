@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MultiPost</title>
+<style>
+:root {
+  --bg: #0d0f14;
+  --s: #13161e;
+  --s2: #1a1e28;
+  --b: #252b3b;
+  --t: #e8edf5;
+  --m: #5a6a85;
+  --a: #3b7cff;
+  --g: #00e5a0;
+  --r: #ff4757;
+  --w: #ffb626;
+  --pu: #a855f7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { width: 480px; min-height: 520px; background: var(--bg); color: var(--t); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; }
+
+/* HEADER */
+.hdr { background: var(--s); border-bottom: 1px solid var(--b); padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-ico { width: 32px; height: 32px; background: linear-gradient(135deg, #3b7cff, #a855f7); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.logo-name { font-size: 14px; font-weight: 700; }
+.logo-sub { font-size: 10px; color: var(--m); }
+.post-count { font-size: 10px; color: var(--m); background: var(--s2); border: 1px solid var(--b); padding: 3px 9px; border-radius: 10px; }
+.post-count b { color: var(--g); }
+
+/* PLATFORMS */
+.section { padding: 12px 14px; border-bottom: 1px solid var(--b); }
+.section-label { font-size: 10px; color: var(--m); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 9px; display: flex; align-items: center; justify-content: space-between; }
+.platforms { display: flex; flex-wrap: wrap; gap: 7px; }
+.plat { display: flex; align-items: center; gap: 7px; padding: 7px 11px; border-radius: 9px; border: 1.5px solid var(--b); background: var(--s); cursor: pointer; transition: all .15s; user-select: none; }
+.plat:hover { border-color: var(--m); }
+.plat.on { border-color: var(--a); background: rgba(59,124,255,.1); }
+.plat.on .plat-ico { filter: none; }
+.plat-ico { font-size: 16px; filter: grayscale(0.4); }
+.plat-name { font-size: 11px; font-weight: 500; }
+.plat-status { font-size: 9px; font-family: monospace; margin-left: 2px; }
+.s-ready { color: var(--g); }
+.s-warn { color: var(--w); }
+
+/* SELECT ALL */
+.sel-row { display: flex; gap: 6px; align-items: center; }
+.sel-btn { font-size: 10px; font-family: monospace; padding: 3px 8px; border-radius: 5px; border: 1px solid var(--b); background: transparent; color: var(--m); cursor: pointer; }
+.sel-btn:hover { border-color: var(--a); color: var(--a); }
+
+/* CONTENT */
+.compose-area { padding: 12px 14px; border-bottom: 1px solid var(--b); }
+.compose-label { font-size: 10px; color: var(--m); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 7px; }
+textarea#content {
+  width: 100%;
+  height: 110px;
+  background: var(--s2);
+  border: 1.5px solid var(--b);
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: var(--t);
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  line-height: 1.6;
+  transition: border-color .15s;
+}
+textarea#content:focus { border-color: var(--a); }
+textarea#content::placeholder { color: var(--m); }
+
+.char-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--m); font-family: monospace; }
+.char-count { }
+.char-warn { color: var(--w); }
+.char-over { color: var(--r); }
+
+/* MEDIA UPLOAD */
+.media-row { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+.media-btn { display: flex; align-items: center; gap: 5px; padding: 6px 11px; border-radius: 7px; border: 1.5px dashed var(--b); background: transparent; color: var(--m); font-size: 11px; cursor: pointer; transition: all .15s; }
+.media-btn:hover { border-color: var(--a); color: var(--a); }
+.media-previews { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+.media-thumb { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1px solid var(--b); position: relative; cursor: pointer; }
+.media-thumb-wrap { position: relative; }
+.media-remove { position: absolute; top: -4px; right: -4px; width: 14px; height: 14px; border-radius: 50%; background: var(--r); color: #fff; font-size: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+input#mediaInput { display: none; }
+
+/* OPTIONS */
+.options-row { display: flex; gap: 8px; margin-top: 9px; }
+.opt-toggle { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--m); cursor: pointer; }
+.toggle { width: 28px; height: 16px; background: var(--b); border-radius: 8px; position: relative; transition: background .2s; cursor: pointer; flex-shrink: 0; }
+.toggle.on { background: var(--a); }
+.toggle::after { content: ''; width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left .2s; }
+.toggle.on::after { left: 14px; }
+
+/* ACTION BAR */
+.action-bar { padding: 12px 14px; display: flex; gap: 8px; align-items: center; }
+.post-btn { flex: 1; padding: 11px; background: linear-gradient(135deg, #3b7cff, #a855f7); border: none; border-radius: 9px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.post-btn:hover { opacity: .9; }
+.post-btn:disabled { opacity: .4; cursor: not-allowed; }
+.schedule-btn { padding: 11px 14px; border: 1.5px solid var(--b); border-radius: 9px; background: transparent; color: var(--m); font-size: 12px; cursor: pointer; font-family: inherit; }
+.schedule-btn:hover { border-color: var(--a); color: var(--a); }
+
+/* PROGRESS */
+.progress-section { padding: 0 14px 12px; display: none; }
+.prog-title { font-size: 11px; color: var(--m); font-family: monospace; margin-bottom: 8px; }
+.prog-list { display: flex; flex-direction: column; gap: 5px; }
+.prog-item { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 7px; background: var(--s); border: 1px solid var(--b); font-size: 11px; }
+.prog-ico { font-size: 14px; flex-shrink: 0; }
+.prog-name { flex: 1; }
+.prog-state { font-size: 10px; font-family: monospace; }
+.prog-state.posting { color: var(--w); }
+.prog-state.done { color: var(--g); }
+.prog-state.err { color: var(--r); }
+.prog-state.wait { color: var(--m); }
+
+/* HISTORY */
+.hist-btn { font-size: 10px; color: var(--m); cursor: pointer; font-family: monospace; border: none; background: none; }
+.hist-btn:hover { color: var(--a); }
+
+/* TIPS */
+.tip-bar { padding: 7px 14px; background: rgba(59,124,255,.07); border-bottom: 1px solid var(--b); font-size: 10px; color: var(--m); display: flex; align-items: center; gap: 6px; }
+.tip-bar b { color: var(--a); }
+
+/* CHAR LIMITS TOOLTIP */
+.limits-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.limit-chip { font-size: 9px; font-family: monospace; padding: 2px 6px; border-radius: 4px; background: var(--s2); border: 1px solid var(--b); color: var(--m); }
+.limit-chip.over { border-color: var(--r); color: var(--r); }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-ico">🚀</div>
+    <div>
+      <div class="logo-name">MultiPost</div>
+      <div class="logo-sub">Post everywhere at once</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="hist-btn" id="histBtn">📋 History</button>
+    <div class="post-count">Posted <b id="totalPosts">0</b> times</div>
+  </div>
+</div>
+
+<div class="tip-bar">
+  <span>💡</span>
+  <span>Select platforms below, write your post, then hit <b>Post Now</b> — we'll open each tab and auto-fill for you.</span>
+</div>
+
+<!-- PLATFORMS -->
+<div class="section">
+  <div class="section-label">
+    <span>Select Platforms</span>
+    <div class="sel-row">
+      <button class="sel-btn" id="selAll">All</button>
+      <button class="sel-btn" id="selNone">None</button>
+      <button class="sel-btn" id="selSocial">Social</button>
+    </div>
+  </div>
+  <div class="platforms">
+    <div class="plat on" data-plat="twitter" data-limit="280">
+      <span class="plat-ico">🐦</span>
+      <span class="plat-name">Twitter / X</span>
+    </div>
+    <div class="plat on" data-plat="linkedin" data-limit="3000">
+      <span class="plat-ico">💼</span>
+      <span class="plat-name">LinkedIn</span>
+    </div>
+    <div class="plat on" data-plat="facebook" data-limit="63206">
+      <span class="plat-ico">📘</span>
+      <span class="plat-name">Facebook</span>
+    </div>
+    <div class="plat" data-plat="instagram" data-limit="2200">
+      <span class="plat-ico">📸</span>
+      <span class="plat-name">Instagram</span>
+      <span class="plat-status s-warn">needs login</span>
+    </div>
+    <div class="plat" data-plat="reddit" data-limit="40000">
+      <span class="plat-ico">🤖</span>
+      <span class="plat-name">Reddit</span>
+    </div>
+    <div class="plat" data-plat="threads" data-limit="500">
+      <span class="plat-ico">🧵</span>
+      <span class="plat-name">Threads</span>
+    </div>
+    <div class="plat" data-plat="tiktok" data-limit="2200">
+      <span class="plat-ico">🎵</span>
+      <span class="plat-name">TikTok</span>
+      <span class="plat-status s-warn">video only</span>
+    </div>
+    <div class="plat" data-plat="youtube" data-limit="5000">
+      <span class="plat-ico">▶️</span>
+      <span class="plat-name">YouTube</span>
+      <span class="plat-status s-warn">video only</span>
+    </div>
+  </div>
+</div>
+
+<!-- COMPOSE -->
+<div class="compose-area">
+  <div class="compose-label">Write Your Post</div>
+  <textarea id="content" placeholder="What do you want to share today?&#10;&#10;Write once, post everywhere..."></textarea>
+  <div class="char-row">
+    <div class="char-count" id="charCount">0 characters</div>
+    <div id="limitWarning"></div>
+  </div>
+  <div class="limits-row" id="limitsRow"></div>
+
+  <div class="media-row">
+    <label class="media-btn" for="mediaInput">
+      📎 Add Media
+    </label>
+    <input type="file" id="mediaInput" accept="image/*,video/*" multiple>
+    <div class="media-previews" id="mediaPreviews"></div>
+  </div>
+
+  <div class="options-row">
+    <label class="opt-toggle">
+      <div class="toggle on" id="autoFillToggle"></div>
+      <span>Auto-fill text</span>
+    </label>
+    <label class="opt-toggle">
+      <div class="toggle" id="autoPostToggle"></div>
+      <span>Auto-submit</span>
+    </label>
+    <label class="opt-toggle">
+      <div class="toggle on" id="newTabToggle"></div>
+      <span>Open in tabs</span>
+    </label>
+  </div>
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <button class="schedule-btn" id="scheduleBtn">⏰ Schedule</button>
+  <button class="post-btn" id="postBtn">🚀 Post Now to <span id="platCount">2</span> Platforms</button>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section" id="progressSection">
+  <div class="prog-title">Posting status:</div>
+  <div class="prog-list" id="progList"></div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
