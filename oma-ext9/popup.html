@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OMA Lead Engine v9</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0d12;--s:#111620;--s2:#181e2a;--b:#1e2738;--a:#3b7cff;--a2:#00e5a0;--d:#ff4757;--w:#ffb626;--t:#e8edf5;--m:#5a6a85;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--gold:#f59e0b;--pu:#a855f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:460px;min-height:580px;background:var(--bg);color:var(--t);font-family:var(--sans);font-size:13px}
+
+/* HEADER */
+.hdr{background:var(--s);border-bottom:1px solid var(--b);padding:9px 14px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-ico{width:28px;height:28px;background:var(--a);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.logo-n{font-size:13px;font-weight:600}.logo-s{font-size:10px;color:var(--m);font-family:var(--mono)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.live{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--m);font-family:var(--mono)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--a2);box-shadow:0 0 5px var(--a2);animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.plan-badge{font-size:9px;font-family:var(--mono);padding:2px 7px;border-radius:10px;font-weight:700}
+.plan-free{background:rgba(90,106,133,.15);color:var(--m);border:1px solid var(--b)}
+.plan-starter{background:rgba(59,124,255,.15);color:var(--a);border:1px solid rgba(59,124,255,.3)}
+.plan-pro{background:rgba(245,158,11,.2);color:var(--gold);border:1px solid rgba(245,158,11,.3)}
+
+/* USAGE BAR */
+.usage-bar{padding:5px 14px;background:var(--s2);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px}
+.usage-text{font-size:10px;font-family:var(--mono);color:var(--m);flex-shrink:0}
+.usage-track{flex:1;background:var(--b);border-radius:3px;height:4px;overflow:hidden}
+.usage-fill{height:100%;background:var(--a2);border-radius:3px;transition:width .3s}
+.usage-fill.warn{background:var(--w)}.usage-fill.danger{background:var(--d)}
+.upgrade-btn{font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:4px;background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3);cursor:pointer;white-space:nowrap;font-weight:600}
+
+/* FOLLOWUP ALERT */
+.followup-alert{padding:7px 14px;background:rgba(255,182,38,.08);border-bottom:1px solid rgba(255,182,38,.2);display:none;align-items:center;justify-content:space-between}
+.followup-alert.show{display:flex}
+.followup-text{font-size:11px;color:var(--w);font-family:var(--mono)}
+.followup-view{font-size:10px;color:var(--a);cursor:pointer;font-family:var(--mono)}
+
+/* PAGE BAR */
+.page-bar{padding:6px 14px;background:var(--s);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.page-ico{font-size:13px;flex-shrink:0}
+.page-name{font-size:11px;font-weight:500;color:var(--a2)}
+.page-url{font-size:10px;color:var(--m);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}
+
+/* TABS */
+.tabs{display:flex;background:var(--s);border-bottom:1px solid var(--b);overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:7px 10px;font-size:10px;text-align:center;cursor:pointer;color:var(--m);border:none;background:none;font-family:var(--sans);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab.on{color:var(--a);border-bottom-color:var(--a)}
+
+/* PANELS */
+.pnl{display:none;height:calc(100vh - 148px);overflow-y:auto;padding:11px 13px}
+.pnl::-webkit-scrollbar{width:3px}.pnl::-webkit-scrollbar-thumb{background:var(--b)}
+.pnl.on{display:block}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:10px;background:var(--a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px;transition:all .15s}
+.btn-primary:hover{background:#5a92ff}.btn-primary:disabled{background:var(--b);color:var(--m);cursor:not-allowed}
+.btn-starter{width:100%;padding:8px;border:1px solid rgba(59,124,255,.3);background:rgba(59,124,255,.08);color:var(--a);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-starter:hover{background:rgba(59,124,255,.15)}.btn-starter:disabled{opacity:.35;cursor:not-allowed}
+.btn-pro{width:100%;padding:8px;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);color:var(--gold);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-pro:hover{background:rgba(245,158,11,.15)}.btn-pro:disabled{opacity:.35;cursor:not-allowed}
+.tier-tag{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700}
+.tag-starter{background:rgba(59,124,255,.2);color:var(--a)}
+.tag-pro{background:rgba(245,158,11,.2);color:var(--gold)}
+.btn-row{display:flex;gap:6px;margin-bottom:7px}
+.btn-half{flex:1;padding:8px;border:none;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.btn-green{background:var(--a2);color:#0a0d12}.btn-green:disabled{background:var(--b);color:var(--m);cursor:not-allowed}
+.btn-warn{background:transparent;color:var(--w);border:1px solid var(--w)}
+.btn-danger{background:transparent;color:var(--d);border:1px solid rgba(255,71,87,.3)}
+.btn-gmail{background:rgba(234,67,53,.15);color:#ea4335;border:1px solid rgba(234,67,53,.3);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--sans);display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-gmail:hover{background:rgba(234,67,53,.25)}
+.btn-sm{padding:4px 9px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--mono);border:1px solid var(--b);background:transparent;color:var(--m)}
+.btn-sm:hover{border-color:var(--a);color:var(--a)}
+.btn-sm.active{background:var(--a);color:#fff;border-color:var(--a)}
+
+/* TIP BOX */
+.tip{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:11px;color:var(--m);line-height:1.8}
+.tip b{color:var(--t);font-weight:500}
+.tip-link{color:var(--a);cursor:pointer}
+
+/* PROGRESS */
+.progress-box{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:none}
+.progress-label{font-size:11px;color:var(--m);font-family:var(--mono);margin-bottom:6px}
+.progress-track{background:var(--b);border-radius:3px;height:6px;overflow:hidden;margin-bottom:5px}
+.progress-fill{height:100%;background:var(--a);border-radius:3px;transition:width .3s}
+.progress-detail{font-size:10px;color:var(--m);font-family:var(--mono)}
+
+/* RESULT BAR */
+.res-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;color:var(--m);font-family:var(--mono)}
+.res-bar span{color:var(--a2);font-weight:600}
+
+/* LEAD CARDS (scrape tab) */
+.lc{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:9px 11px;margin-bottom:7px;position:relative;transition:border-color .15s}
+.lc:hover{border-color:var(--a)}.lc.audited{border-left:3px solid var(--a2)}
+.score-wrap{position:absolute;top:9px;left:11px}
+.score-stars{font-size:10px;line-height:1}
+.lc-body{padding-left:46px;padding-right:52px}
+.lc-n{font-size:12px;font-weight:600}
+.lc-domain{font-size:10px;color:var(--a);font-family:var(--mono);cursor:pointer;text-decoration:none;display:inline-block;margin:1px 0 3px}
+.lc-domain:hover{text-decoration:underline}
+.lc-c{font-size:11px;color:var(--m);margin-bottom:4px}
+.lc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.tag{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px}
+.te{background:rgba(59,124,255,.15);color:var(--a)}
+.tp{background:rgba(255,182,38,.15);color:var(--w)}
+.ts{background:rgba(90,106,133,.15);color:var(--m)}
+.tn{background:rgba(0,229,160,.1);color:var(--a2)}
+.t-issues{background:rgba(255,71,87,.1);color:var(--d)}
+.t-stack{background:rgba(168,85,247,.1);color:var(--pu)}
+.t-intent{background:rgba(0,229,160,.15);color:var(--a2)}
+.la-wrap{position:absolute;top:8px;right:8px;display:flex;gap:3px}
+.la{width:21px;height:21px;border-radius:4px;border:none;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center}
+.la-audit{background:rgba(245,158,11,.15);color:var(--gold)}.la-audit:hover{background:var(--gold);color:#000}
+.la-x{background:rgba(255,71,87,.1);color:var(--d)}.la-x:hover{background:var(--d);color:#fff}
+
+/* AUDIT PANEL */
+.audit-panel{padding-top:8px;margin-top:7px;border-top:1px solid var(--b);display:none}
+.audit-panel.show{display:block}
+.health-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.health-label{font-size:10px;color:var(--m);font-family:var(--mono);flex-shrink:0;width:90px}
+.health-track{flex:1;background:var(--b);border-radius:3px;height:5px;overflow:hidden}
+.health-fill{height:100%;border-radius:3px}
+.health-val{font-size:10px;font-family:var(--mono);font-weight:600;flex-shrink:0;width:30px;text-align:right}
+.opener-box{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 10px;margin-bottom:7px}
+.opener-label{font-size:9px;color:var(--gold);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.opener-text{font-size:11px;color:var(--t);line-height:1.6;font-style:italic}
+.issues-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px}
+.issue-chip{background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.15);border-radius:5px;padding:4px 7px;font-size:10px}
+.issue-chip-prob{color:var(--d);font-weight:500}.issue-chip-svc{color:var(--m);font-family:var(--mono);font-size:9px;margin-top:1px}
+
+/* EMAIL FINDER PANEL */
+.email-panel{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 10px;margin-bottom:7px;display:none}
+.email-panel.show{display:block}
+.email-panel-title{font-size:9px;color:var(--a);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.email-row{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--b)}
+.email-row:last-child{border-bottom:none}
+.email-addr{font-size:11px;font-family:var(--mono);color:var(--t);flex:1}
+.email-conf{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:3px}
+.conf-verified{background:rgba(0,229,160,.15);color:var(--a2)}
+.conf-high{background:rgba(59,124,255,.15);color:var(--a)}
+.conf-medium{background:rgba(255,182,38,.15);color:var(--w)}
+.conf-low{background:rgba(90,106,133,.15);color:var(--m)}
+
+/* SOCIAL PANEL */
+.social-panel{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 10px;margin-bottom:7px;display:none}
+.social-panel.show{display:block}
+.social-panel-title{font-size:9px;color:var(--pu);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.social-stat{display:flex;align-items:center;gap:8px;font-size:11px;padding:3px 0}
+.social-ico{font-size:12px;width:20px}
+.social-val{color:var(--t);font-family:var(--mono);font-size:10px}
+.social-sub{color:var(--m);font-size:10px;margin-left:auto}
+.social-dead{color:var(--d);font-size:9px;font-family:var(--mono)}
+
+/* NOTES */
+.notes-box{margin-top:6px}
+.notes-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:5px;padding:5px 8px;color:var(--t);font-size:10px;font-family:var(--mono);outline:none;resize:none;line-height:1.5}
+.notes-input:focus{border-color:var(--a)}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap}
+.filter-chip{padding:4px 9px;border-radius:12px;font-size:10px;font-family:var(--mono);cursor:pointer;border:1px solid var(--b);background:transparent;color:var(--m);transition:all .15s}
+.filter-chip.on{background:var(--a);color:#fff;border-color:var(--a)}
+.srch{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:11px;font-family:var(--mono);outline:none;margin-bottom:6px}
+.srch:focus{border-color:var(--a)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:9px}
+.stat{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:7px 5px;text-align:center}
+.stat-n{font-size:15px;font-weight:600;font-family:var(--mono)}
+.bl{color:var(--a)}.gr{color:var(--a2)}.yw{color:var(--w)}.gd{color:var(--gold)}
+.stat-l{font-size:8px;color:var(--m);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* MINI LEADS LIST */
+.ml{display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--b)}
+.ml:last-child{border-bottom:none}
+.ml-chk{width:13px;height:13px;accent-color:var(--a);flex-shrink:0}
+.ml-score{font-size:10px;flex-shrink:0;width:24px}
+.ml-i{flex:1;min-width:0}
+.ml-n{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-s{font-size:10px;color:var(--m);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ml-b{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px;flex-shrink:0}
+.mb-new{background:rgba(59,124,255,.15);color:var(--a)}
+.mb-approved{background:rgba(0,229,160,.15);color:var(--a2)}
+.mb-pushed{background:rgba(255,182,38,.15);color:var(--w)}
+.mb-replied{background:rgba(0,229,160,.3);color:#fff}
+.mb-contacted{background:rgba(168,85,247,.15);color:var(--pu)}
+.ml-del{width:16px;height:16px;border-radius:3px;border:none;background:rgba(255,71,87,.1);color:var(--d);cursor:pointer;font-size:9px;flex-shrink:0}
+.ml-actions{display:flex;gap:3px;flex-shrink:0}
+
+/* CRM KANBAN */
+.crm-pipeline{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.crm-pipeline::-webkit-scrollbar{height:3px}.crm-pipeline::-webkit-scrollbar-thumb{background:var(--b)}
+.crm-col{min-width:130px;flex-shrink:0}
+.crm-col-title{font-size:10px;font-family:var(--mono);color:var(--m);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;padding:4px 6px;background:var(--s);border-radius:4px;display:flex;align-items:center;justify-content:space-between}
+.crm-col-count{background:var(--b);border-radius:10px;padding:1px 5px;font-size:9px}
+.crm-card{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:8px 9px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.crm-card:hover{border-color:var(--a)}
+.crm-card-n{font-size:11px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crm-card-niche{font-size:9px;color:var(--m);font-family:var(--mono);margin-bottom:4px}
+.crm-card-val{font-size:10px;color:var(--a2);font-family:var(--mono)}
+.crm-card-actions{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.crm-mv{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid var(--b);background:transparent;color:var(--m);cursor:pointer}
+.crm-mv:hover{border-color:var(--a);color:var(--a)}
+.crm-del{font-size:9px;font-family:var(--mono);padding:2px 5px;border-radius:3px;border:1px solid rgba(255,71,87,.2);background:transparent;color:var(--d);cursor:pointer}
+.crm-add-btn{width:100%;padding:6px;background:transparent;border:1px dashed var(--b);border-radius:6px;color:var(--m);font-size:10px;cursor:pointer;font-family:var(--sans)}
+.crm-add-btn:hover{border-color:var(--a);color:var(--a)}
+.crm-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px}
+.crm-sum-stat{background:var(--s);border:1px solid var(--b);border-radius:7px;padding:7px;text-align:center}
+.crm-sum-n{font-size:14px;font-weight:600;font-family:var(--mono)}
+.crm-sum-l{font-size:8px;color:var(--m);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* OUTREACH TAB */
+.out-lead-select{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:7px 11px;color:var(--t);font-family:var(--mono);font-size:11px;outline:none;margin-bottom:8px}
+.out-lead-select:focus{border-color:var(--a)}
+.out-section{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.out-section-title{font-size:10px;color:var(--m);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px}
+.tmpl-btn{padding:6px 8px;border-radius:6px;border:1px solid var(--b);background:transparent;color:var(--m);font-size:10px;cursor:pointer;font-family:var(--sans);text-align:left;transition:all .15s}
+.tmpl-btn:hover{border-color:var(--a);color:var(--t)}
+.tmpl-btn.on{border-color:var(--a);background:rgba(59,124,255,.1);color:var(--a)}
+.type-row{display:flex;gap:5px;margin-bottom:8px}
+.type-btn{flex:1;padding:5px;border-radius:5px;border:1px solid var(--b);background:transparent;color:var(--m);font-size:10px;cursor:pointer;font-family:var(--mono);text-align:center}
+.type-btn.on{background:var(--a);color:#fff;border-color:var(--a)}
+.email-preview{background:var(--bg);border:1px solid var(--b);border-radius:7px;padding:10px 12px;margin-bottom:8px}
+.email-preview-sub{font-size:11px;font-weight:600;color:var(--t);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b)}
+.email-preview-body{font-size:11px;color:var(--m);line-height:1.8;white-space:pre-wrap;max-height:160px;overflow-y:auto}
+.email-preview-body::-webkit-scrollbar{width:2px}.email-preview-body::-webkit-scrollbar-thumb{background:var(--b)}
+.out-actions{display:flex;gap:6px;margin-bottom:8px}
+.followup-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--m)}
+.followup-select{background:var(--s2);border:1px solid var(--b);border-radius:5px;padding:4px 8px;color:var(--t);font-family:var(--mono);font-size:10px;outline:none}
+.intent-box{background:var(--s);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.intent-title{font-size:10px;color:var(--a2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.intent-row{display:flex;align-items:center;gap:8px;font-size:11px;padding:2px 0}
+.intent-ico{font-size:12px;width:20px;flex-shrink:0}
+.intent-val{color:var(--t);flex:1}
+.intent-badge{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:3px}
+.ib-new{background:rgba(0,229,160,.15);color:var(--a2)}
+.ib-old{background:rgba(90,106,133,.15);color:var(--m)}
+.ib-warn{background:rgba(255,182,38,.15);color:var(--w)}
+
+/* SETTINGS */
+.field{margin-bottom:11px}
+.field label{display:block;font-size:10px;color:var(--m);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.field input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 11px;color:var(--t);font-family:var(--mono);font-size:11px;outline:none}
+.field input:focus{border-color:var(--a)}.field input::placeholder{color:var(--m)}
+.save-btn{width:100%;padding:10px;background:var(--a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);margin-bottom:7px}
+.cb{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-family:var(--mono);padding:3px 8px;border-radius:4px;margin-bottom:9px}
+.cy{background:rgba(0,229,160,.15);color:var(--a2)}.cn{background:rgba(255,71,87,.15);color:var(--d)}
+.saved{text-align:center;font-size:10px;font-family:var(--mono);color:var(--a2);margin-top:6px;display:none}
+.lic-box{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:12px;margin-bottom:12px}
+.lic-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.lic-status{font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:10px}
+.lic-pro{background:rgba(245,158,11,.2);color:var(--gold)}
+.lic-starter{background:rgba(59,124,255,.2);color:var(--a)}
+.lic-free{background:rgba(90,106,133,.15);color:var(--m)}
+.lic-feat{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 0}
+.lic-feat.has{color:var(--a2)}.lic-feat.locked{color:var(--m);opacity:.5}
+.how{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:10px;margin-top:10px}
+.how h4{font-size:10px;color:var(--a);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.how li{font-size:11px;color:var(--m);line-height:1.8;margin-left:14px}
+.code{font-family:var(--mono);font-size:9px;background:var(--bg);border:1px solid var(--b);padding:6px 8px;border-radius:4px;margin:5px 0;display:block;color:var(--a2);word-break:break-all;white-space:pre-wrap}
+
+/* LOG */
+.log-line{font-size:10px;font-family:var(--mono);color:var(--m);padding:1px 0;line-height:1.8}
+.log-line.ok{color:var(--a2)}.log-line.err{color:var(--d)}.log-line.inf{color:var(--a)}
+
+/* EMPTY */
+.empty{padding:28px 14px;text-align:center;color:var(--m)}
+.e-ico{font-size:26px;margin-bottom:6px}.e-txt{font-size:12px}.e-sub{font-size:10px;font-family:var(--mono);margin-top:3px;color:var(--b)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:20px;width:400px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:3px}
+.modal-sub{font-size:11px;color:var(--m);margin-bottom:14px}
+.plan-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.plan-card{border:2px solid var(--b);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;position:relative}
+.plan-card:hover{border-color:var(--a)}.plan-card.selected{border-color:var(--a);background:rgba(59,124,255,.05)}
+.plan-card.pro-card.selected{border-color:var(--gold);background:rgba(245,158,11,.05)}
+.plan-card-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.plan-card-price{font-size:22px;font-weight:700;font-family:var(--mono);margin-bottom:6px}
+.plan-card-price span{font-size:11px;color:var(--m);font-weight:400}
+.plan-card-feat{font-size:10px;color:var(--m);line-height:1.8}
+.plan-card-feat li{list-style:none;padding:1px 0}
+.plan-card-feat li::before{content:"✓ ";color:var(--a2)}
+.modal-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 11px;color:var(--t);font-family:var(--mono);font-size:11px;outline:none;margin-bottom:7px}
+.modal-input:focus{border-color:var(--a)}.modal-input::placeholder{color:var(--m)}
+.modal-activate{width:100%;padding:10px;background:var(--a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);margin-bottom:7px}
+.modal-close{width:100%;padding:7px;background:transparent;color:var(--m);border:1px solid var(--b);border-radius:8px;font-size:11px;cursor:pointer;font-family:var(--sans)}
+.modal-msg{text-align:center;font-size:11px;font-family:var(--mono);margin-top:5px;min-height:15px}
+.modal-msg.ok{color:var(--a2)}.modal-msg.err{color:var(--d)}
+
+/* MISC */
+.divider{border:none;border-top:1px solid var(--b);margin:10px 0}
+.section-title{font-size:10px;color:var(--m);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;margin-top:2px}
+.bulk-box,.comp-box{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:12px;margin-bottom:10px}
+.bulk-title{font-size:12px;font-weight:600;color:var(--a2);margin-bottom:4px}
+.comp-title{font-size:12px;font-weight:600;color:var(--gold);margin-bottom:4px}
+.bulk-sub,.comp-sub{font-size:10px;color:var(--m);margin-bottom:10px;line-height:1.6}
+.comp-input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:8px 10px;color:var(--t);font-size:11px;font-family:var(--mono);outline:none;margin-bottom:7px}
+.comp-input:focus{border-color:var(--gold)}.comp-input::placeholder{color:var(--m)}
+</style>
+</head>
+<body>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal">
+    <div class="modal-title" style="color:var(--a)">⚡ Upgrade OMA Lead Engine</div>
+    <div class="modal-sub">Choose your plan — one-time payment, lifetime access.</div>
+    <div class="plan-cards">
+      <div class="plan-card" id="planCardStarter" onclick="selectPlan('STARTER')">
+        <div class="plan-card-name" style="color:var(--a)">Starter</div>
+        <div class="plan-card-price" style="color:var(--a)">$29<span>/month</span></div>
+        <ul class="plan-card-feat">
+          <li>500 leads/month</li>
+          <li>Email Finder</li>
+          <li>Gmail Outreach</li>
+          <li>Social Audit</li>
+          <li>All 10 platforms</li>
+        </ul>
+      </div>
+      <div class="plan-card pro-card" id="planCardPro" onclick="selectPlan('PRO')">
+        <div class="plan-card-name" style="color:var(--gold)">Pro</div>
+        <div class="plan-card-price" style="color:var(--gold)">$79<span>/month</span></div>
+        <ul class="plan-card-feat">
+          <li>Unlimited leads</li>
+          <li>Intent Signals</li>
+          <li>CRM Pipeline</li>
+          <li>Bulk Scrape</li>
+          <li>Competitor Stealer</li>
+        </ul>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--m);margin-bottom:10px">Already purchased? Enter your license key:</div>
+    <input type="email" class="modal-input" id="licEmail" placeholder="Your email address">
+    <input type="text"  class="modal-input" id="licKey"   placeholder="License key — OMA-XXXX-XXXX">
+    <button class="modal-activate" id="activateBtn">Activate License</button>
+    <button class="modal-close"    id="closeModalBtn">Maybe later</button>
+    <div class="modal-msg" id="modalMsg"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-ico">⚡</div>
+    <div><div class="logo-n">OMA Lead Engine</div><div class="logo-s">v9 · scrape · find · outreach · close</div></div>
+  </div>
+  <div class="hdr-right">
+    <span class="plan-badge plan-free" id="planBadge">FREE</span>
+    <div class="live"><div class="dot"></div><span id="liveStatus">Ready</span></div>
+  </div>
+</div>
+
+<!-- USAGE BAR -->
+<div class="usage-bar" id="usageBar">
+  <span class="usage-text" id="usageText">0 / 20 leads</span>
+  <div class="usage-track"><div class="usage-fill" id="usageFill" style="width:0%"></div></div>
+  <button class="upgrade-btn" id="upgradeBarBtn">Upgrade</button>
+</div>
+
+<!-- FOLLOW-UP ALERT -->
+<div class="followup-alert" id="followupAlert">
+  <span class="followup-text" id="followupText">⏰ Follow-ups due</span>
+  <span class="followup-view" id="followupViewBtn">View →</span>
+</div>
+
+<!-- PAGE BAR -->
+<div class="page-bar">
+  <div class="page-ico" id="pageIco">🌐</div>
+  <div style="min-width:0;flex:1">
+    <div class="page-name" id="pageName">Open a page to scrape</div>
+    <div class="page-url"  id="pageUrl"></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" id="tab-scrape-btn">🔍 Scrape</button>
+  <button class="tab"    id="tab-bulk-btn">⚡ Bulk</button>
+  <button class="tab"    id="tab-steal-btn">🕵️ Steal</button>
+  <button class="tab"    id="tab-leads-btn">📋 Leads</button>
+  <button class="tab"    id="tab-crm-btn">📊 CRM</button>
+  <button class="tab"    id="tab-outreach-btn">📧 Outreach</button>
+  <button class="tab"    id="tab-log-btn">📈 Log</button>
+  <button class="tab"    id="tab-settings-btn">⚙️</button>
+</div>
+
+<!-- ══════════════════════════════════════════ SCRAPE TAB -->
+<div class="pnl on" id="pnl-scrape">
+  <div class="tip">
+    <b>Supported platforms:</b><br>
+    <a class="tip-link" id="link-maps">→ Google Maps</a> ·
+    <a class="tip-link" id="link-linkedin">→ LinkedIn</a> ·
+    <a class="tip-link" id="link-yp">→ Yellow Pages</a> ·
+    <a class="tip-link" id="link-yelp">→ Yelp</a> ·
+    <a class="tip-link" id="link-clutch">→ Clutch</a> ·
+    <a class="tip-link" id="link-angi">→ Angi</a>
+  </div>
+  <button class="btn-primary" id="scrapeBtn">⚡ Scrape This Page</button>
+  <button class="btn-starter" id="auditAllBtn">🎯 Audit All Leads (Silent) <span class="tier-tag tag-starter">STARTER</span></button>
+  <div class="progress-box" id="auditProgress">
+    <div class="progress-label" id="auditProgressLabel">Auditing websites...</div>
+    <div class="progress-track"><div class="progress-fill" id="auditProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="auditProgressDetail"></div>
+  </div>
+  <div class="res-bar" id="resBar" style="display:none">
+    <span>Found <span id="resNum">0</span> leads · <span id="dupeNum" style="color:var(--w)">0 dupes skipped</span></span>
+  </div>
+  <div id="scrapeResults"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ BULK TAB -->
+<div class="pnl" id="pnl-bulk">
+  <div class="bulk-box">
+    <div class="bulk-title">⚡ Bulk Scrape <span class="tier-tag tag-pro">PRO</span></div>
+    <div class="bulk-sub">Enter a search URL from Google Maps, Yellow Pages, LinkedIn, or Clutch. We'll auto-paginate and collect all leads silently.</div>
+    <div class="field" style="margin-bottom:7px"><label>Search URL (first page)</label><input type="text" id="bulkUrl" placeholder="https://www.google.com/maps/search/dentist+Texas"></div>
+    <div class="field" style="margin-bottom:7px"><label>Pages to scrape (max 20)</label><input type="number" id="bulkPages" value="5" min="1" max="20"></div>
+    <button class="btn-pro" id="bulkBtn" style="width:100%">⚡ Start Bulk Scrape <span class="tier-tag tag-pro">PRO</span></button>
+  </div>
+  <div class="progress-box" id="bulkProgress">
+    <div class="progress-label" id="bulkProgressLabel">Scraping pages...</div>
+    <div class="progress-track"><div class="progress-fill" id="bulkProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="bulkProgressDetail"></div>
+  </div>
+  <div id="bulkResults"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ STEAL TAB -->
+<div class="pnl" id="pnl-steal">
+  <div class="comp-box">
+    <div class="comp-title">🕵️ Competitor Client Stealer <span class="tier-tag tag-pro">PRO</span></div>
+    <div class="comp-sub">Enter a competitor agency name. We'll find their clients, scrape contacts, audit websites, and add them to your leads — silently.</div>
+    <input type="text" class="comp-input" id="compName"     placeholder="Competitor agency — e.g. WebAgency Pro">
+    <input type="text" class="comp-input" id="compLocation" placeholder="Location (optional) — e.g. Texas, USA">
+    <button class="btn-pro" id="compBtn" style="width:100%;margin-bottom:0">🕵️ Find Their Clients <span class="tier-tag tag-pro">PRO</span></button>
+  </div>
+  <div class="progress-box" id="compProgress">
+    <div class="progress-label" id="compProgressLabel">Searching...</div>
+    <div class="progress-track"><div class="progress-fill" id="compProgressFill" style="width:0%"></div></div>
+    <div class="progress-detail" id="compProgressDetail"></div>
+  </div>
+  <hr class="divider">
+  <div class="bulk-box">
+    <div class="bulk-title">🔄 Reverse Search — Find Buyers <span class="tier-tag tag-starter">STARTER</span></div>
+    <div class="bulk-sub">Find businesses actively posting about needing marketing help. Search Reddit, Google, LinkedIn.</div>
+    <div class="field" style="margin-bottom:7px"><label>Search Keyword</label><input type="text" id="reverseKw" placeholder="e.g. real estate agent looking for leads"></div>
+    <div style="display:flex;gap:6px;margin-bottom:7px">
+      <button class="btn-sm active" id="rv-google" data-plat="google">Google</button>
+      <button class="btn-sm" id="rv-reddit"  data-plat="reddit">Reddit</button>
+      <button class="btn-sm" id="rv-linkedin" data-plat="linkedin">LinkedIn</button>
+    </div>
+    <button class="btn-starter" id="reverseBtn" style="width:100%;margin-bottom:0">🔄 Find Buyers <span class="tier-tag tag-starter">STARTER</span></button>
+  </div>
+  <div id="compResults"></div>
+</div>
+
+<!-- ══════════════════════════════════════════ LEADS TAB -->
+<div class="pnl" id="pnl-leads">
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-n bl" id="sT">0</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-n gr" id="sA">0</div><div class="stat-l">Contacted</div></div>
+    <div class="stat"><div class="stat-n yw" id="sP">0</div><div class="stat-l">Pushed</div></div>
+    <div class="stat"><div class="stat-n gd" id="sR">0</div><div class="stat-l">Replied</div></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-half btn-green" id="pushBtn" disabled>📤 Push Sheet</button>
+    <button class="btn-half btn-warn"  id="csvBtn">⬇ CSV</button>
+    <button class="btn-half btn-danger" id="clrBtn">✕ Clear</button>
+  </div>
+  <input type="text" class="srch" id="srchInput" placeholder="Search leads...">
+  <div class="filter-bar">
+    <button class="filter-chip on" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="new">New</button>
+    <button class="filter-chip" data-filter="contacted">Contacted</button>
+    <button class="filter-chip" data-filter="pushed">Pushed</button>
+    <button class="filter-chip" data-filter="replied">Replied</button>
+    <button class="filter-chip" data-filter="audited">Audited</button>
+    <button class="filter-chip" data-filter="hot">⭐⭐⭐</button>
+  </div>
+  <div id="leadsList"><div class="empty"><div class="e-ico">📋</div><div class="e-txt">No leads yet</div><div class="e-sub">Scrape pages to collect leads</div></div></div>
+</div>
+
+<!-- ══════════════════════════════════════════ CRM TAB -->
+<div class="pnl" id="pnl-crm">
+  <div class="crm-summary">
+    <div class="crm-sum-stat"><div class="crm-sum-n bl" id="crmTotal">0</div><div class="crm-sum-l">Deals</div></div>
+    <div class="crm-sum-stat"><div class="crm-sum-n gd" id="crmValue">$0</div><div class="crm-sum-l">Pipeline</div></div>
+    <div class="crm-sum-stat"><div class="crm-sum-n gr" id="crmClosed">0</div><div class="crm-sum-l">Closed</div></div>
+  </div>
+  <div class="crm-pipeline" id="crmPipeline">
+    <!-- Kanban columns rendered by popup.js -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ OUTREACH TAB -->
+<div class="pnl" id="pnl-outreach">
+  <div class="out-section">
+    <div class="out-section-title">1 · Select Lead</div>
+    <select class="out-lead-select" id="outLeadSelect">
+      <option value="">— Select a lead —</option>
+    </select>
+    <div id="outLeadInfo" style="display:none">
+      <div style="font-size:11px;color:var(--m);margin-bottom:4px">Email: <span id="outLeadEmail" style="color:var(--a);font-family:var(--mono)">—</span></div>
+      <div style="font-size:11px;color:var(--m)">Best time: <span id="outBestTime" style="color:var(--a2)">—</span></div>
+    </div>
+  </div>
+  <div class="out-section">
+    <div class="out-section-title">2 · Pick Template</div>
+    <div class="template-grid" id="templateGrid"><!-- filled by js --></div>
+    <div class="type-row">
+      <button class="type-btn on" data-type="cold">Cold Email</button>
+      <button class="type-btn"    data-type="followup1">Follow-up 1</button>
+      <button class="type-btn"    data-type="followup2">Follow-up 2</button>
+    </div>
+  </div>
+  <div class="out-section">
+    <div class="out-section-title">3 · Preview & Send</div>
+    <div class="email-preview" id="emailPreview">
+      <div class="email-preview-sub" id="previewSubject">Select a lead and template to preview</div>
+      <div class="email-preview-body" id="previewBody">—</div>
+    </div>
+    <div class="out-actions">
+      <button class="btn-gmail" id="gmailSendBtn">✉️ Open in Gmail</button>
+      <button class="btn-sm"    id="copyEmailBtn">📋 Copy</button>
+      <button class="btn-sm"    id="refreshPreviewBtn">🔄 Refresh</button>
+    </div>
+    <div class="followup-row">
+      <span>Schedule follow-up:</span>
+      <select class="followup-select" id="followupDays">
+        <option value="0">None</option>
+        <option value="3" selected>3 days</option>
+        <option value="7">7 days</option>
+        <option value="14">14 days</option>
+      </select>
+    </div>
+  </div>
+  <div class="intent-box" id="intentBox" style="display:none">
+    <div class="intent-title">Intent Signals</div>
+    <div id="intentContent">—</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ LOG TAB -->
+<div class="pnl" id="pnl-log">
+  <div id="logDiv"><div class="log-line inf">▶ OMA Lead Engine v9 ready</div></div>
+</div>
+
+<!-- ══════════════════════════════════════════ SETTINGS TAB -->
+<div class="pnl" id="pnl-settings">
+  <div class="lic-box">
+    <div class="lic-title">License <span class="lic-status lic-free" id="licStatusBadge">FREE TIER</span></div>
+    <div id="licInfo" style="font-size:11px;color:var(--m);margin-bottom:8px">20 leads/month · Basic scraping only</div>
+    <div id="licFeatures">
+      <div class="lic-feat has">✓ 10 platforms · Push to Sheet · CSV</div>
+      <div class="lic-feat locked">🔒 Email Finder (Starter+)</div>
+      <div class="lic-feat locked">🔒 Gmail 1-click Outreach (Starter+)</div>
+      <div class="lic-feat locked">🔒 Social Media Audit (Starter+)</div>
+      <div class="lic-feat locked">🔒 500 leads/month (Starter)</div>
+      <div class="lic-feat locked">🔒 Intent Signals / Domain Age (Pro)</div>
+      <div class="lic-feat locked">🔒 CRM Pipeline (Pro)</div>
+      <div class="lic-feat locked">🔒 Bulk Scrape (Pro)</div>
+      <div class="lic-feat locked">🔒 Competitor Stealer (Pro)</div>
+      <div class="lic-feat locked">🔒 Unlimited leads (Pro)</div>
+    </div>
+    <button class="save-btn" id="upgradeSettingsBtn" style="margin-top:10px;background:var(--gold);color:#000">⚡ Upgrade — Starter $29 / Pro $79</button>
+    <div style="font-size:10px;color:var(--m);text-align:center;margin-top:3px">Have a key? <span id="enterKeyLink" style="color:var(--a);cursor:pointer">Enter license key</span></div>
+  </div>
+  <div id="connBadge" class="cb cn">● Not connected to Google Sheet</div>
+  <div class="field"><label>Apps Script URL</label><input type="text" id="iUrl" placeholder="https://script.google.com/macros/s/..."></div>
+  <div class="field"><label>Your Name</label><input type="text" id="iName" value="Uns"></div>
+  <div class="field"><label>Agency Name</label><input type="text" id="iAgency" value="Outreach Marketing Agency"></div>
+  <div class="field"><label>WhatsApp / Booking Link</label><input type="text" id="iWA" value="https://wa.me/923710160513"></div>
+  <button class="save-btn" id="saveBtn">💾 Save Settings</button>
+  <div class="saved" id="savedMsg">✅ Saved!</div>
+  <div class="how">
+    <h4>Connect Google Sheet — Apps Script</h4>
+    <ol>
+      <li>Google Sheet → Extensions → Apps Script</li>
+      <li>Replace doPost with:<span class="code">function doPost(e){
+  var d=JSON.parse(e.postData.contents);
+  var s=SpreadsheetApp.getActiveSpreadsheet()
+        .getSheetByName("Leads");
+  s.appendRow([d.firstName,d.lastName,d.email,
+    d.company,d.niche||"startup",d.website,
+    d.painPoints||d.painPoint,1,"Pending","","","","",
+    d.opener||"",d.auditScore||"",d.techStack||"",
+    d.intentSignal||""]);
+  return ContentService.createTextOutput(
+    JSON.stringify({status:"ok"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</span></li>
+      <li>Deploy → New Deployment → Web App → Execute as Me → Anyone</li>
+      <li>Copy URL → paste above → Save</li>
+    </ol>
+  </div>
+</div>
+
+<script src="templates.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
